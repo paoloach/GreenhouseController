@@ -1,2 +1,6 @@
-idf_component_register(SRCS  "hello_world_main.c"
-        INCLUDE_DIRS "")
+idf_component_register(SRCS
+        "GreenhouseController.c"
+        "wifi.cpp"
+        "Settings.cpp"
+        "Dht11.cpp"
+    INCLUDE_DIRS "")
