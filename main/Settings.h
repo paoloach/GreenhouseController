@@ -14,6 +14,7 @@ public:
     void init();
     char  wifiSSID[32];
     char  wifiPasswd[64];
+
   };
 
 extern "C" void initSettings();

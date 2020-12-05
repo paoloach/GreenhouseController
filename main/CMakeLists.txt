@@ -3,4 +3,6 @@ idf_component_register(SRCS
         "wifi.cpp"
         "Settings.cpp"
         "Dht11.cpp"
+        "Sensor.cpp"
+        "SensorSetting.cpp"
     INCLUDE_DIRS "")

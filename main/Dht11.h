@@ -6,6 +6,7 @@
 #define GREENHOUSECONTROLLER_DHT11_H
 
 #include <driver/gpio.h>
+#include "Sensor.h"
 
 enum class Dht11Result {
     VALID,
@@ -13,7 +14,7 @@ enum class Dht11Result {
     PARITY_ERROR
 };
 
-class Dht11 {
+class Dht11 : public Sensor{
 private:
     gpio_num_t pin;
 public:
