@@ -8,14 +8,24 @@
 
 #ifdef __cplusplus
 
+
 #include <cstdint>
+#include <cJSON.h>
+#include <vector>
+#include <memory>
+#include "SensorType.h"
+#include "AutoConfigurationTopic.h"
 
 class SensorSetting;
 
 class Sensor {
 public:
+    Sensor(SensorType type): type(type){}
+    SensorType type;
+    const char * name;
     virtual void init(SensorSetting & setting)=0;
     virtual void step() = 0;
+    virtual std::vector<std::unique_ptr<AutoconfigurationTopic>> autoconfigure()=0;
 };
 
 extern  Sensor * * sensors;

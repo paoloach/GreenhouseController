@@ -17,6 +17,8 @@ public:
 
 
     void init();
+    char name[32];
+    char strMac[7];
     char wifiSSID[32];
     char wifiPasswd[64];
     char mqttBrokerUrl[32];

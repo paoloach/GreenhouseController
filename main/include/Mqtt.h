@@ -7,6 +7,8 @@
 
 
 #include <mqtt_client.h>
+#include <cJSON.h>
+#include "Sensor.h"
 
 #ifdef __cplusplus
 
@@ -26,6 +28,7 @@ private:
     void eventPublished();
     void eventData(esp_mqtt_event_handle_t ptr);
     void eventError();
+    cJSON *createSensorAutoconf(Sensor *sensor, const char * subName, const char * unitOfMeasure, const char * icon);
 };
 
 extern Mqtt * mqttClient;

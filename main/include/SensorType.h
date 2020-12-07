@@ -1,0 +1,16 @@
+//
+// Created by paolo on 12/7/20.
+//
+
+#ifndef GREENHOUSECONTROLLER_SENSORTYPE_H
+#define GREENHOUSECONTROLLER_SENSORTYPE_H
+
+
+enum class SensorType {
+    DHT11,
+    LIGHT,
+    HEATER
+};
+
+
+#endif //GREENHOUSECONTROLLER_SENSORTYPE_H

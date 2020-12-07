@@ -8,18 +8,12 @@
 #include <string_view>
 #include <memory>
 #include <driver/gpio.h>
+#include "SensorType.h"
 #include "Sensor.h"
-
-
-enum class SensorType {
-    DHT11,
-    LIGHT,
-    HEATER
-};
 
 class SensorSetting {
 public:
-    std::string_view name;
+    const char * name;
     std::unique_ptr<gpio_num_t[]> pins;
     SensorType sensorType;
 };

@@ -86,6 +86,16 @@ void Mqtt::eventError() {
 
 void Mqtt::eventConnect(esp_mqtt_event_handle_t event) {
     ESP_LOGI(TAG, "CONNECTED");
+
+
+    for(uint8_t i=0; i<totSensors; i++){
+        auto autoconfigures = sensors[i]->autoconfigure();
+        for(auto & json: autoconfigures){
+            auto data = cJSON_Print(json->data);
+            esp_mqtt_client_publish(client, json->topicName, data, 0, 1, 0);
+        }
+    }
+
 //    msg_id = esp_mqtt_client_publish(client, "/topic/qos1", "data_3", 0, 1, 0);
 //    ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
 //
@@ -102,6 +112,7 @@ void Mqtt::eventConnect(esp_mqtt_event_handle_t event) {
 void Mqtt::eventPublished() {
 
 }
+
 
 void initMqtt(void) {
     if (Settings::settings.mqttEnable){
