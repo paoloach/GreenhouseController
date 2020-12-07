@@ -18,6 +18,7 @@ void initSettings() {
 }
 
 void Settings::init() {
+    char buffer[100];
     uint8_t mac[6];
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -35,6 +36,8 @@ void Settings::init() {
     strcpy(mqttBrokerUrl, MQTT_URL);
     strcpy(mqttUsername, MQTT_USER);
     strcpy(mqttPassword, MQTT_PASS);
+    sprintf(buffer, "homeassistant/sensor/%s-%s/state", name, strMac);
+    mqttStateTopic = strdup(buffer);
 
     sensorSettings = std::make_unique<SensorSetting[]>(1);
     sensorSettings[0].name="Global";

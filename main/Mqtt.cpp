@@ -96,21 +96,26 @@ void Mqtt::eventConnect(esp_mqtt_event_handle_t event) {
         }
     }
 
-//    msg_id = esp_mqtt_client_publish(client, "/topic/qos1", "data_3", 0, 1, 0);
-//    ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
-//
-//    msg_id = esp_mqtt_client_subscribe(client, "/topic/qos0", 0);
-//    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-//
-//    msg_id = esp_mqtt_client_subscribe(client, "/topic/qos1", 1);
-//    ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-//
-//    msg_id = esp_mqtt_client_unsubscribe(client, "/topic/qos1");
-//    ESP_LOGI(TAG, "sent unsubscribe successful, msg_id=%d", msg_id);
+    xTaskCreate(Mqtt::sendStatus, "MqttSendStatus", 2048,  this, tskIDLE_PRIORITY, nullptr );
 }
 
 void Mqtt::eventPublished() {
 
+}
+
+void Mqtt::sendStatus(void * arg) {
+    Mqtt * mqtt = reinterpret_cast<Mqtt*>(arg);
+
+    while(true) {
+        auto state = cJSON_CreateObject();
+        for (uint8_t i = 0; i < totSensors; i++) {
+            sensors[i]->setState(state);
+        }
+        auto data = cJSON_Print(state);
+        esp_mqtt_client_publish(mqtt->client,Settings::settings.mqttStateTopic, data, 0, 1, 0);
+        cJSON_Delete(state);
+        vTaskDelay(10000 / portTICK_PERIOD_MS);
+    }
 }
 
 

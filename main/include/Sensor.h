@@ -26,6 +26,7 @@ public:
     virtual void init(SensorSetting & setting)=0;
     virtual void step() = 0;
     virtual std::vector<std::unique_ptr<AutoconfigurationTopic>> autoconfigure()=0;
+    virtual void setState(cJSON *pJson) = 0;
 };
 
 extern  Sensor * * sensors;

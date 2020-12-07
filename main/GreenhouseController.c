@@ -41,8 +41,4 @@ void app_main() {
 
     createSensors();
 
-    while (true){
-        vTaskDelay(10000 / portTICK_PERIOD_MS);
-        stepSensor();
-    }
 }

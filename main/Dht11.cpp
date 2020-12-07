@@ -95,6 +95,10 @@ void Dht11::init(SensorSetting &setting) {
 
     temp=0;
     humidity=0;
+
+    confTemp = make_unique<MqttConfigurationMessage>(name, TEMP_SENSOR_NAME, "°C","mdi:thermometer");
+    confHumidity = make_unique<MqttConfigurationMessage>(name, HUMIDITY_SENSOR_NAME, "%", nullptr);
+
 }
 
 Dht11Result Dht11::waitFor1(uint8_t timeout) {
@@ -123,10 +127,13 @@ Dht11Result Dht11::waitFor0(uint8_t timeout) {
 }
 
 Dht11Result Dht11::checkParity(const uint8_t *data) {
-    if(data[4] == (data[0] + data[1] + data[2] + data[3]))
+    if( data[4] == ((data[0] + data[1] + data[2] + data[3])&0xFF))
         return Dht11Result::VALID;
-    else
+    else {
+        uint8_t a = (data[0] + data[1] + data[2] + data[3]);
+        ESP_LOGE(TAG, "%d != %d", a, data[4]);
         return Dht11Result::PARITY_ERROR;
+    }
 }
 
 void Dht11::step() {
@@ -141,73 +148,19 @@ void Dht11::step() {
 std::vector<std::unique_ptr<AutoconfigurationTopic>> Dht11::autoconfigure() {
     auto jsons = vector<std::unique_ptr<AutoconfigurationTopic>>();
 
-    jsons.push_back(make_unique<AutoconfigurationTopic>(createTempConfiguration(), createTempTopicConfiguration()));
-    jsons.push_back(make_unique<AutoconfigurationTopic>(createHumidityConfiguration(), createHumidityTopicConfiguration()));
+    jsons.push_back(make_unique<AutoconfigurationTopic>(confTemp->createConfig(), confTemp->createTopicName()));
+    jsons.push_back(make_unique<AutoconfigurationTopic>(confHumidity->createConfig(), confHumidity->createTopicName()));
 
     return jsons;
 
 }
 
-cJSON *Dht11::createTempConfiguration() {
-    cJSON * tempJson = cJSON_CreateObject();
-    char buffer[200];
-
-    sprintf(buffer, "%s-%s-%s", Settings::settings.name, name, TEMP_SENSOR_NAME);
-
-    cJSON_AddStringToObject(tempJson, "name", buffer);
-    sprintf(buffer, "%s-%s-%s-%s", Settings::settings.name, Settings::settings.strMac, name, TEMP_SENSOR_NAME );
-    cJSON_AddStringToObject(tempJson, "uniq_id", buffer);
-    cJSON * devJson = cJSON_CreateObject();
-    sprintf(buffer, "%s-%s", Settings::settings.name, Settings::settings.strMac);
-    cJSON_AddStringToObject(devJson, "ids",buffer);
-    cJSON_AddItemToObject(tempJson, "dev",devJson);
-
-    sprintf(buffer, "homeassistant/sensor/%s-%s/state", Settings::settings.name, Settings::settings.strMac);
-    cJSON_AddStringToObject(tempJson, "stat_t", buffer);
-    cJSON_AddStringToObject(tempJson, "unit_of_meas", "°C");
-    cJSON_AddStringToObject(tempJson, "ic", "mdi:thermometer");
-    cJSON_AddStringToObject(tempJson, "frc_upd", "false");
-    sprintf(buffer, "{{value_json.%s-%s}}", name, TEMP_SENSOR_NAME);
-    cJSON_AddStringToObject(tempJson, "val_tpl", buffer);
-
-    return tempJson;
-}
-
-char *Dht11::createTempTopicConfiguration() {
-    char buffer[200];
-
-    sprintf(buffer, "homeassistant/sensor/%s-%s-%s-%s/config", Settings::settings.name, Settings::settings.strMac, name,TEMP_SENSOR_NAME);
-    return strdup(buffer);
-}
-
-cJSON *Dht11::createHumidityConfiguration() {
-    cJSON * humidityJson = cJSON_CreateObject();
-    char buffer[200];
-
-    sprintf(buffer, "%s-%s-%s", Settings::settings.name, name, HUMIDITY_SENSOR_NAME);
-
-    cJSON_AddStringToObject(humidityJson, "name", buffer);
-    sprintf(buffer, "%s-%s-%s-%s", Settings::settings.name, Settings::settings.strMac, name, HUMIDITY_SENSOR_NAME );
-    cJSON_AddStringToObject(humidityJson, "uniq_id", buffer);
-    cJSON * devJson = cJSON_CreateObject();
-    sprintf(buffer, "%s-%s", Settings::settings.name, Settings::settings.strMac);
-    cJSON_AddStringToObject(devJson, "ids",buffer);
-    cJSON_AddItemToObject(humidityJson, "dev",devJson);
-
-    sprintf(buffer, "homeassistant/sensor/%s-%s/state", Settings::settings.name, Settings::settings.strMac);
-    cJSON_AddStringToObject(humidityJson, "stat_t", buffer);
-    cJSON_AddStringToObject(humidityJson, "unit_of_meas", "%");
-    cJSON_AddStringToObject(humidityJson, "frc_upd", "false");
-    sprintf(buffer, "{{value_json.%s-%s}}", name, HUMIDITY_SENSOR_NAME);
-    cJSON_AddStringToObject(humidityJson, "val_tpl", buffer);
-
-    return humidityJson;
-}
-
-char *Dht11::createHumidityTopicConfiguration() {
-    char buffer[200];
-
-    sprintf(buffer, "homeassistant/sensor/%s-%s-%s-%s/config", Settings::settings.name, Settings::settings.strMac, name,HUMIDITY_SENSOR_NAME);
-    return strdup(buffer);
+void Dht11::setState(cJSON *state) {
+    char buffer[100];
+    read();
+    sprintf(buffer, "%f", temp);
+    cJSON_AddStringToObject(state, confTemp->stateFieldName, buffer);
+    sprintf(buffer, "%f", humidity);
+    cJSON_AddStringToObject(state, confHumidity->stateFieldName, buffer);
 }
 

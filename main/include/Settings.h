@@ -27,6 +27,7 @@ public:
     bool mqttEnable;
     std::unique_ptr<SensorSetting[]> sensorSettings;
     uint8_t  totSensors;
+    char * mqttStateTopic;
   };
 
 extern "C" void initSettings();

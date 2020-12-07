@@ -6,4 +6,5 @@ idf_component_register(SRCS
         "Sensor.cpp"
         "SensorSetting.cpp"
         "Mqtt.cpp"
+        "MqttConfigurationMessage.cpp"
     INCLUDE_DIRS "")

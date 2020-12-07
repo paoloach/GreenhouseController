@@ -11,6 +11,7 @@
 
 #include <list>
 #include "Sensor.h"
+#include "MqttConfigurationMessage.h"
 
 
 class SensorSetting;
@@ -26,11 +27,14 @@ private:
     static constexpr const char * TEMP_SENSOR_NAME="temperature";
     static constexpr const char * HUMIDITY_SENSOR_NAME="humidity";
     gpio_num_t pin;
+    std::unique_ptr<MqttConfigurationMessage> confTemp;
+    std::unique_ptr<MqttConfigurationMessage> confHumidity;
 public:
     Dht11():Sensor(SensorType::DHT11){}
     void init(SensorSetting & setting) override;
     void step() override;
     std::vector<std::unique_ptr<AutoconfigurationTopic>> autoconfigure() override;
+    void setState(cJSON *pJson) override;
     Dht11Result  read();
 
     float humidity;
@@ -41,10 +45,7 @@ private:
     Dht11Result waitFor1(uint8_t timeout);
     Dht11Result waitFor0(uint8_t timeout);
     static Dht11Result checkParity(const uint8_t *data);
-    cJSON * createTempConfiguration();
-    cJSON * createHumidityConfiguration();
-    char * createTempTopicConfiguration();
-    char * createHumidityTopicConfiguration();
+
 };
 #endif
 

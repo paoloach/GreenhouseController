@@ -28,7 +28,7 @@ private:
     void eventPublished();
     void eventData(esp_mqtt_event_handle_t ptr);
     void eventError();
-    cJSON *createSensorAutoconf(Sensor *sensor, const char * subName, const char * unitOfMeasure, const char * icon);
+    static void sendStatus(void *);
 };
 
 extern Mqtt * mqttClient;
