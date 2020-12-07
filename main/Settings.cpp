@@ -2,11 +2,12 @@
 // Created by paolo on 12/2/20.
 //
 
+#include <driver/gpio.h>
 #include <esp_err.h>
 #include <nvs_flash.h>
 #include <cstring>
-#include "Settings.h"
-#include "Passwords.h"
+#include "include/Settings.h"
+#include "include/Passwords.h"
 
 
 Settings Settings::settings;
@@ -25,5 +26,16 @@ void Settings::init() {
 
     strcpy(wifiSSID, SSID);
     strcpy(wifiPasswd, PASSWORD);
+    strcpy(mqttBrokerUrl, MQTT_URL);
+    strcpy(mqttUsername, MQTT_USER);
+    strcpy(mqttPassword, MQTT_PASS);
 
+    sensorSettings = std::make_unique<SensorSetting[]>(1);
+    sensorSettings[0].name="Temperature";
+    sensorSettings[0].sensorType = SensorType::DHT11;
+    sensorSettings[0].pins = std::make_unique<gpio_num_t[]>(1);
+    sensorSettings[0].pins[0] = GPIO_NUM_25;
+
+    totSensors=1;
+    mqttEnable=true;
 }

@@ -7,14 +7,24 @@
 
 
 #ifdef __cplusplus
+
+#include <memory>
+#include "SensorSetting.h"
+
 class Settings {
 public:
     static Settings  settings;
 
-    void init();
-    char  wifiSSID[32];
-    char  wifiPasswd[64];
 
+    void init();
+    char wifiSSID[32];
+    char wifiPasswd[64];
+    char mqttBrokerUrl[32];
+    char mqttUsername[32];
+    char mqttPassword[32];
+    bool mqttEnable;
+    std::unique_ptr<SensorSetting[]> sensorSettings;
+    uint8_t  totSensors;
   };
 
 extern "C" void initSettings();

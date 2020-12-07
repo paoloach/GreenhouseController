@@ -5,19 +5,24 @@
 #include <esp32/rom/ets_sys.h>
 #include <esp_timer.h>
 #include <soc_log.h>
-#include "Dht11.h"
+#include "include/Dht11.h"
+
+#include "include/SensorSetting.h"
 
 static const char *TAG = "DHT11";
 
 Dht11Result Dht11::read() {
     start();
     if (waitFor0(80) == Dht11Result::INVALID_TIMEOUT){
+        ESP_LOGE(TAG,"%s:%d timeout", __FILE__,__LINE__);
         return Dht11Result::INVALID_TIMEOUT;
     }
     if (waitFor1(100) == Dht11Result::INVALID_TIMEOUT){
+        ESP_LOGE(TAG,"%s:%d timeout", __FILE__,__LINE__);
         return Dht11Result::INVALID_TIMEOUT;
     }
     if (waitFor0(80) == Dht11Result::INVALID_TIMEOUT){
+        ESP_LOGE(TAG,"%s:%d timeout", __FILE__,__LINE__);
         return Dht11Result::INVALID_TIMEOUT;
     }
     /* Read response */
@@ -27,16 +32,20 @@ Dht11Result Dht11::read() {
     for(int i = 0; i < 40; i++) {
         if (waitFor1(80) == Dht11Result::INVALID_TIMEOUT){
             ESP_LOGE(TAG, "timeout error at bit %d", i);
+            ESP_LOGE(TAG,"%s:%d timeout", __FILE__,__LINE__);
             return Dht11Result::INVALID_TIMEOUT;
         }
         int64_t start = esp_timer_get_time();
-        if (waitFor1(100) == Dht11Result::INVALID_TIMEOUT){
+        if (waitFor0(100) == Dht11Result::INVALID_TIMEOUT){
             ESP_LOGE(TAG, "timeout error at bit %d", i);
+            ESP_LOGE(TAG,"%s:%d timeout", __FILE__,__LINE__);
             return Dht11Result::INVALID_TIMEOUT;
         }
         int64_t end = esp_timer_get_time();
-        if (end-start<10)
+        if (end-start<10) {
+            ESP_LOGE(TAG,"%s:%d timeout for bit %d", __FILE__,__LINE__, i);
             return Dht11Result::INVALID_TIMEOUT;
+        }
         if (end-start>50) {
             data[dataIndex] |= 0x01;
         }
@@ -53,8 +62,8 @@ Dht11Result Dht11::read() {
         ESP_LOGE(TAG, "Parity error");
         return Dht11Result::PARITY_ERROR;
     }
-    humidity = data[0]+data[1]/10.0;
-    temp = data[2]+data[3]/10.0;
+    humidity = data[0]+data[1]/255.0;
+    temp = data[2]+data[3]/255.0;
     ESP_LOGI(TAG, "Temp: %f, Humidity: %f", temp, humidity);
     return Dht11Result::VALID;
 }
@@ -68,7 +77,8 @@ void Dht11::start() {
 
 }
 
-Dht11::Dht11(gpio_num_t pin) :pin(pin){
+void Dht11::init(SensorSetting &setting) {
+    pin = setting.pins[0];
     gpio_config_t gpioConfig;
     gpioConfig.pin_bit_mask = BIT(pin)  ;
     gpioConfig.mode = GPIO_MODE_INPUT;
@@ -113,3 +123,13 @@ Dht11Result Dht11::checkParity(const uint8_t *data) {
     else
         return Dht11Result::PARITY_ERROR;
 }
+
+void Dht11::step() {
+    if(read() == Dht11Result::VALID){
+        ESP_LOGI(TAG,"Temp: %f, humidity: %f", temp, humidity);
+    } else {
+        ESP_LOGI(TAG,"INVAliD");
+    }
+
+}
+

@@ -10,9 +10,9 @@
 #include <esp_wifi.h>
 #include <soc_log.h>
 #include <string.h>
-#include "wifi.h"
-#include "GroupSignals.h"
-#include "Settings.h"
+#include "include/wifi.h"
+#include "include/GroupSignals.h"
+#include "include/Settings.h"
 
 
 static const char *TAG = "Wifi";

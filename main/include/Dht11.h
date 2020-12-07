@@ -6,7 +6,12 @@
 #define GREENHOUSECONTROLLER_DHT11_H
 
 #include <driver/gpio.h>
+
+#ifdef __cplusplus
+
 #include "Sensor.h"
+
+class SensorSetting;
 
 enum class Dht11Result {
     VALID,
@@ -18,7 +23,8 @@ class Dht11 : public Sensor{
 private:
     gpio_num_t pin;
 public:
-    Dht11(gpio_num_t  pin);
+    void init(SensorSetting & setting) override;
+    void step() override;
     Dht11Result  read();
     float humidity;
     float temp;
@@ -29,6 +35,7 @@ private:
     Dht11Result waitFor0(uint8_t timeout);
     static Dht11Result checkParity(const uint8_t *data);
 };
+#endif
 
 
 #endif //GREENHOUSECONTROLLER_DHT11_H

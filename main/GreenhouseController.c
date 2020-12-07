@@ -11,8 +11,11 @@
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_spi_flash.h"
-#include "Settings.h"
-#include "wifi.h"
+#include "include/Settings.h"
+#include "include/wifi.h"
+#include "include/Dht11.h"
+#include "include/Sensor.h"
+#include "include/Mqtt.h"
 
 
 void app_main() {
@@ -34,8 +37,12 @@ void app_main() {
 
     initSettings();
     initWifi();
+    initMqtt();
+
+    createSensors();
 
     while (true){
-       vTaskDelay(1000 / portTICK_PERIOD_MS);
+        vTaskDelay(10000 / portTICK_PERIOD_MS);
+        stepSensor();
     }
 }
