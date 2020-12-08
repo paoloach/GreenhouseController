@@ -2,14 +2,10 @@
 // Created by paolo on 12/2/20.
 //
 
-#ifndef GREENHOUSECONTROLLER_DHT11_H
-#define GREENHOUSECONTROLLER_DHT11_H
+#pragma once
 
 #include <driver/gpio.h>
 
-#ifdef __cplusplus
-
-#include <list>
 #include "../../include/Sensor.h"
 #include "../../include/MqttSensorConfigurationMessage.h"
 
@@ -48,7 +44,5 @@ private:
     static Dht11Result checkParity(const uint8_t *data);
 
 };
-#endif
 
 
-#endif //GREENHOUSECONTROLLER_DHT11_H

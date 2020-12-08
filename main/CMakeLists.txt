@@ -4,6 +4,7 @@ idf_component_register(SRCS
         "Settings.cpp"
         "sensor/Dht11.cpp"
         "sensor/Bistable.cpp"
+        "sensor/Switch.cpp"
         "Sensor.cpp"
         "SensorSetting.cpp"
         "Mqtt.cpp"

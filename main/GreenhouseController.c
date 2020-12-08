@@ -8,19 +8,15 @@
 */
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_spi_flash.h"
 #include "include/Settings.h"
 #include "include/wifi.h"
-#include "sensor/include/Dht11.h"
 #include "include/Sensor.h"
 #include "include/Mqtt.h"
 
 
 void app_main() {
-    printf("Hello world!\n");
-
     /* Print chip information */
     esp_chip_info_t chip_info;
     esp_chip_info(&chip_info);
