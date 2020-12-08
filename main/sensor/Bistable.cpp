@@ -3,6 +3,7 @@
 //
 
 #include <memory>
+#include <cstring>
 #include "include/Bistable.h"
 #include "../include/MqttSwitchConfigurationMessage.h"
 #include "../include/Settings.h"
@@ -65,11 +66,20 @@ void Bistable::off() {
 std::vector<unique_ptr<SubscribingTopic>> Bistable::subscribingTopics() {
 
     auto subscribingTopics = std::vector<std::unique_ptr<SubscribingTopic>>();
-    subscribingTopics.push_back( make_unique<SubscribingTopic>(configuration->createCmdTopicName(), [this](uint8_t *data){ cmdHandler(data);}));
+    subscribingTopics.push_back( make_unique<SubscribingTopic>(configuration->createCmdTopicName(), [this](char *data, int len){ cmdHandler(data,len);}));
 
     return subscribingTopics;
 }
 
-void Bistable::cmdHandler(uint8_t *data) {
-
+void Bistable::cmdHandler(char *data, int len) {
+    if (memcmp(data, "ON", 2)==0){
+        state= true;
+    } else if (memcmp(data, "OFF", 3)==0){
+        state=false;
+    } else {
+        char error[len+1];
+        memcpy(error, data, len);
+        error[len]=0;
+        ESP_LOGE(TAG, "Invalid cmd: %s", error);
+    }
 }

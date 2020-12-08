@@ -76,8 +76,15 @@ void Mqtt::eventUnsubscribed() {
 
 void Mqtt::eventData(esp_mqtt_event_handle_t event) {
     ESP_LOGI(TAG, "NEW DATA");
-    printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
-    printf("DATA=%.*s\r\n", event->data_len, event->data);
+    char topic[event->topic_len+1];
+    memcpy(topic, event->topic, event->topic_len);
+    topic[event->topic_len]=0;
+    for(auto & subscribedTopic: subscribingTopic){
+        if (strcmp(subscribedTopic->topicName, topic)==0 ){
+            subscribedTopic->handler(event->data, event->data_len);
+        }
+    }
+
 }
 
 void Mqtt::eventError() {

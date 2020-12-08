@@ -11,13 +11,13 @@
 class SubscribingTopic {
 public:
     char * topicName;
-    std::function<void( uint8_t * )> handler;
+    std::function<void( char  * , int len)> handler;
 
     SubscribingTopic():topicName(nullptr), handler(nullptr){
         ESP_LOGI("SubscribingTopic", "default creating %s", topicName);
     }
 
-    SubscribingTopic(char * topicName, std::function<void( uint8_t * )> && handler):
+    SubscribingTopic(char * topicName, std::function<void( char *, int len )> && handler):
      topicName(topicName), handler(std::move(handler)){
         ESP_LOGI("SubscribingTopic", "creating %s", topicName);
     }

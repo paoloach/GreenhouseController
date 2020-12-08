@@ -14,6 +14,7 @@ class SensorSetting;
 
 class Bistable : public Sensor{
 private:
+    static constexpr const char * TAG ="Bistable";
     gpio_num_t pinH;
     gpio_num_t pinL;
     std::unique_ptr<MqttSwitchConfigurationMessage> configuration;
@@ -25,7 +26,7 @@ public:
     std::vector<std::unique_ptr<AutoconfigurationTopic>> autoconfigure() override;
     void setState(cJSON *pJson) override;
     std::vector<std::unique_ptr<SubscribingTopic>> subscribingTopics() override;
-    void cmdHandler(uint8_t * data);
+    void cmdHandler(char * data, int len);
 
 private:
     void on();
