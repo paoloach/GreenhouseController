@@ -13,7 +13,7 @@
 #include "esp_spi_flash.h"
 #include "include/Settings.h"
 #include "include/wifi.h"
-#include "include/Dht11.h"
+#include "sensor/include/Dht11.h"
 #include "include/Sensor.h"
 #include "include/Mqtt.h"
 

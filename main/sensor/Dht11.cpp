@@ -8,8 +8,8 @@
 #include <cstring>
 #include "include/Dht11.h"
 
-#include "include/SensorSetting.h"
-#include "include/Settings.h"
+#include "../include/SensorSetting.h"
+#include "../include/Settings.h"
 
 static const char *TAG = "DHT11";
 
@@ -61,7 +61,7 @@ Dht11Result Dht11::read() {
             dataIndex++;
         }
     }
-    ESP_LOGI(TAG,"Read 0x%02d, 0x%02d,0x%02d,0x%02d,0x%02d", (uint16_t )data[0],(uint16_t )data[1], (uint16_t )data[2], (uint16_t )data[3], (uint16_t )data[4]  );
+    ESP_LOGI(TAG,"Read 0x%02X, 0x%02X,0x%02X,0x%02X,0x%02X", (uint16_t )data[0],(uint16_t )data[1], (uint16_t )data[2], (uint16_t )data[3], (uint16_t )data[4]  );
     if (checkParity(data) != Dht11Result::VALID){
         ESP_LOGE(TAG, "Parity error");
         return Dht11Result::PARITY_ERROR;
@@ -96,8 +96,8 @@ void Dht11::init(SensorSetting &setting) {
     temp=0;
     humidity=0;
 
-    confTemp = make_unique<MqttConfigurationMessage>(name, TEMP_SENSOR_NAME, "°C","mdi:thermometer");
-    confHumidity = make_unique<MqttConfigurationMessage>(name, HUMIDITY_SENSOR_NAME, "%", nullptr);
+    confTemp = make_unique<MqttSensorConfigurationMessage>(name, TEMP_SENSOR_NAME, "°C", "mdi:thermometer");
+    confHumidity = make_unique<MqttSensorConfigurationMessage>(name, HUMIDITY_SENSOR_NAME, "%", nullptr);
 
 }
 
@@ -148,8 +148,8 @@ void Dht11::step() {
 std::vector<std::unique_ptr<AutoconfigurationTopic>> Dht11::autoconfigure() {
     auto jsons = vector<std::unique_ptr<AutoconfigurationTopic>>();
 
-    jsons.push_back(make_unique<AutoconfigurationTopic>(confTemp->createConfig(), confTemp->createTopicName()));
-    jsons.push_back(make_unique<AutoconfigurationTopic>(confHumidity->createConfig(), confHumidity->createTopicName()));
+    jsons.push_back(make_unique<AutoconfigurationTopic>(confTemp->createConfig(), confTemp->createConfigTopicName()));
+    jsons.push_back(make_unique<AutoconfigurationTopic>(confHumidity->createConfig(), confHumidity->createConfigTopicName()));
 
     return jsons;
 
@@ -162,5 +162,9 @@ void Dht11::setState(cJSON *state) {
     cJSON_AddStringToObject(state, confTemp->stateFieldName, buffer);
     sprintf(buffer, "%f", humidity);
     cJSON_AddStringToObject(state, confHumidity->stateFieldName, buffer);
+}
+
+std::vector<std::unique_ptr<SubscribingTopic>> Dht11::subscribingTopics() {
+    return std::vector<std::unique_ptr<SubscribingTopic>>();
 }
 

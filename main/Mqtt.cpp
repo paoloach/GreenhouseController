@@ -89,10 +89,17 @@ void Mqtt::eventConnect(esp_mqtt_event_handle_t event) {
 
 
     for(uint8_t i=0; i<totSensors; i++){
-        auto autoconfigures = sensors[i]->autoconfigure();
-        for(auto & json: autoconfigures){
+        for(auto & json:  sensors[i]->autoconfigure()){
             auto data = cJSON_Print(json->data);
             esp_mqtt_client_publish(client, json->topicName, data, 0, 1, 0);
+        }
+    }
+
+    for(uint8_t i=0; i<totSensors; i++){
+        for(auto & subscribe:  sensors[i]->subscribingTopics()){
+            ESP_LOGI(TAG, "subscribing topic %s", subscribe->topicName);
+            esp_mqtt_client_subscribe(client, subscribe->topicName,1);
+            subscribingTopic.push_back(std::move(subscribe));
         }
     }
 

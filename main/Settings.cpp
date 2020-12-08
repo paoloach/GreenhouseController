@@ -39,12 +39,26 @@ void Settings::init() {
     sprintf(buffer, "homeassistant/sensor/%s-%s/state", name, strMac);
     mqttStateTopic = strdup(buffer);
 
-    sensorSettings = std::make_unique<SensorSetting[]>(1);
+    sensorSettings = std::make_unique<SensorSetting[]>(2);
     sensorSettings[0].name="Global";
     sensorSettings[0].sensorType = SensorType::DHT11;
     sensorSettings[0].pins = std::make_unique<gpio_num_t[]>(1);
     sensorSettings[0].pins[0] = GPIO_NUM_25;
 
-    totSensors=1;
+    sensorSettings[1].name="Light";
+    sensorSettings[1].sensorType = SensorType::BISTABLE;
+    sensorSettings[1].pins = std::make_unique<gpio_num_t[]>(2);
+    sensorSettings[1].pins[0] = GPIO_NUM_16;
+    sensorSettings[1].pins[1] = GPIO_NUM_17;
+
+    totSensors=2;
     mqttEnable=true;
+}
+
+cJSON *Settings::devDescription() {
+    char buffer[200];
+    cJSON * devJson = cJSON_CreateObject();
+    sprintf(buffer, "%s-%s", Settings::settings.name, Settings::settings.strMac);
+    cJSON_AddStringToObject(devJson, "ids",buffer);
+    return devJson;
 }

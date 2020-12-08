@@ -19,6 +19,8 @@ public:
 private:
     static constexpr const char * TAG="MQTT";
     esp_mqtt_client_handle_t client;
+    std::vector<std::unique_ptr<SubscribingTopic>> subscribingTopic;
+
     static void  eventHandler(void* event_handler_arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 
     void eventConnect(esp_mqtt_event_handle_t ptr);

@@ -24,6 +24,7 @@ public:
     char mqttBrokerUrl[32];
     char mqttUsername[32];
     char mqttPassword[32];
+    cJSON * devDescription();
     bool mqttEnable;
     std::unique_ptr<SensorSetting[]> sensorSettings;
     uint8_t  totSensors;

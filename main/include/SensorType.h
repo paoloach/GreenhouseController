@@ -8,8 +8,7 @@
 
 enum class SensorType {
     DHT11,
-    LIGHT,
-    HEATER
+    BISTABLE
 };
 
 

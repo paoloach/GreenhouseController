@@ -3,10 +3,10 @@
 //
 
 #include <cstring>
-#include "include/MqttConfigurationMessage.h"
+#include "include/MqttSensorConfigurationMessage.h"
 #include "include/Settings.h"
 
-cJSON *MqttConfigurationMessage::createConfig() {
+cJSON *MqttSensorConfigurationMessage::createConfig() {
     cJSON * tempJson = cJSON_CreateObject();
     char buffer[200];
 
@@ -31,7 +31,7 @@ cJSON *MqttConfigurationMessage::createConfig() {
     return tempJson;
 }
 
-char *MqttConfigurationMessage::createTopicName() {
+char *MqttSensorConfigurationMessage::createConfigTopicName() {
     char buffer[200];
     if (subName != nullptr) {
         sprintf(buffer, "homeassistant/sensor/%s-%s-%s-%s/config", Settings::settings.name, Settings::settings.strMac,
@@ -43,8 +43,8 @@ char *MqttConfigurationMessage::createTopicName() {
     return strdup(buffer);
 }
 
-MqttConfigurationMessage::MqttConfigurationMessage(const char *name, const char *subName, const char *unitOfMeasure,
-                                                   const char *icon) :
+MqttSensorConfigurationMessage::MqttSensorConfigurationMessage(const char *name, const char *subName, const char *unitOfMeasure,
+                                                               const char *icon) :
         name(name), subName(subName), unitOfMeas(unitOfMeasure), icon(icon){
 
     char buffer[100];

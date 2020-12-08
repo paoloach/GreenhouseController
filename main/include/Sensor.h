@@ -15,6 +15,7 @@
 #include <memory>
 #include "SensorType.h"
 #include "AutoConfigurationTopic.h"
+#include "SubscribingTopic.h"
 
 class SensorSetting;
 
@@ -27,6 +28,7 @@ public:
     virtual void step() = 0;
     virtual std::vector<std::unique_ptr<AutoconfigurationTopic>> autoconfigure()=0;
     virtual void setState(cJSON *pJson) = 0;
+    virtual std::vector<std::unique_ptr<SubscribingTopic>> subscribingTopics() =0;
 };
 
 extern  Sensor * * sensors;

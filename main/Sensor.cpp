@@ -5,7 +5,8 @@
 #include <esp_log.h>
 #include "include/Sensor.h"
 #include "include/Settings.h"
-#include "include/Dht11.h"
+#include "sensor/include/Dht11.h"
+#include "sensor/include/Bistable.h"
 
 Sensor * * sensors;
 uint8_t totSensors;
@@ -16,9 +17,9 @@ static std::unique_ptr<Sensor> makeSensor(SensorType type){
         case SensorType::DHT11:
             ESP_LOGI(TAG, "Creating dht11 sensor");
             return std::make_unique<Dht11>();
-        case SensorType::HEATER:
-            break;
-        case SensorType::LIGHT:
+        case SensorType::BISTABLE:
+            ESP_LOGI(TAG, "Creating Bistable sensor");
+            return std::make_unique<Bistable>();
             break;
     }
     return std::unique_ptr<Sensor>();

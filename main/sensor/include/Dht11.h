@@ -10,8 +10,8 @@
 #ifdef __cplusplus
 
 #include <list>
-#include "Sensor.h"
-#include "MqttConfigurationMessage.h"
+#include "../../include/Sensor.h"
+#include "../../include/MqttSensorConfigurationMessage.h"
 
 
 class SensorSetting;
@@ -27,14 +27,15 @@ private:
     static constexpr const char * TEMP_SENSOR_NAME="temperature";
     static constexpr const char * HUMIDITY_SENSOR_NAME="humidity";
     gpio_num_t pin;
-    std::unique_ptr<MqttConfigurationMessage> confTemp;
-    std::unique_ptr<MqttConfigurationMessage> confHumidity;
+    std::unique_ptr<MqttSensorConfigurationMessage> confTemp;
+    std::unique_ptr<MqttSensorConfigurationMessage> confHumidity;
 public:
     Dht11():Sensor(SensorType::DHT11){}
     void init(SensorSetting & setting) override;
     void step() override;
     std::vector<std::unique_ptr<AutoconfigurationTopic>> autoconfigure() override;
     void setState(cJSON *pJson) override;
+    std::vector<std::unique_ptr<SubscribingTopic>> subscribingTopics() override;
     Dht11Result  read();
 
     float humidity;
