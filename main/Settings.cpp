@@ -17,6 +17,10 @@ void initSettings() {
     Settings::settings.init();
 }
 
+const char * getName(void) {
+    return Settings::settings.name;
+}
+
 void Settings::init() {
     char buffer[100];
     uint8_t mac[6];
@@ -39,7 +43,7 @@ void Settings::init() {
     sprintf(buffer, "homeassistant/sensor/%s-%s/state", name, strMac);
     mqttStateTopic = strdup(buffer);
 
-    sensorSettings = std::make_unique<SensorSetting[]>(2);
+    sensorSettings = std::make_unique<SensorSetting[]>(3);
     sensorSettings[0].name="Global";
     sensorSettings[0].sensorType = SensorType::DHT11;
     sensorSettings[0].pins = std::make_unique<gpio_num_t[]>(1);
@@ -51,7 +55,12 @@ void Settings::init() {
     sensorSettings[1].pins[0] = GPIO_NUM_16;
     sensorSettings[1].pins[1] = GPIO_NUM_17;
 
-    totSensors=2;
+    sensorSettings[1].name="Heater";
+    sensorSettings[1].sensorType = SensorType::MONOSTABLE;
+    sensorSettings[1].pins = std::make_unique<gpio_num_t[]>(1);
+    sensorSettings[1].pins[0] = GPIO_NUM_23;
+
+    totSensors=3;
     mqttEnable=true;
 }
 

@@ -1,10 +1,12 @@
 idf_component_register(SRCS
         "GreenhouseController.c"
         "wifi.cpp"
+        "webServer.cpp"
         "Settings.cpp"
         "sensor/Dht11.cpp"
         "sensor/Bistable.cpp"
         "sensor/Switch.cpp"
+        "sensor/Monostable.cpp"
         "Sensor.cpp"
         "SensorSetting.cpp"
         "Mqtt.cpp"

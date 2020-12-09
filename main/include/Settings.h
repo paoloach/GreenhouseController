@@ -31,8 +31,12 @@ public:
     char * mqttStateTopic;
   };
 
-extern "C" void initSettings();
+extern "C" {
+    void initSettings(void);
+    const char * getName(void);
+}
 #else
   void initSettings();
+  const char * getName(void);
 #endif
 #endif //GREENHOUSECONTROLLER_SETTINGS_H

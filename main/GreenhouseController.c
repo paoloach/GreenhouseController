@@ -14,6 +14,7 @@
 #include "include/wifi.h"
 #include "include/Sensor.h"
 #include "include/Mqtt.h"
+#include "include/webServer.h"
 
 
 void app_main() {
@@ -34,6 +35,7 @@ void app_main() {
     initSettings();
     initWifi();
     initMqtt();
+    initWebserver();
 
     createSensors();
 

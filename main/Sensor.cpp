@@ -7,6 +7,7 @@
 #include "include/Settings.h"
 #include "sensor/include/Dht11.h"
 #include "sensor/include/Bistable.h"
+#include "sensor/include/Monostable.h"
 
 Sensor * * sensors;
 uint8_t totSensors;
@@ -20,7 +21,9 @@ static std::unique_ptr<Sensor> makeSensor(SensorType type){
         case SensorType::BISTABLE:
             ESP_LOGI(TAG, "Creating Bistable sensor");
             return std::make_unique<Bistable>();
-            break;
+        case SensorType::MONOSTABLE:
+            ESP_LOGI(TAG, "Creating Monostable sensor");
+            return std::make_unique<Monostable>();
     }
     return std::unique_ptr<Sensor>();
 }
