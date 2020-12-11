@@ -27,6 +27,17 @@ esp_err_t WebServer::setSampleIntervalHandler(httpd_req_t *req) {
     return ESP_OK;
 }
 esp_err_t WebServer::getStatusHandler(httpd_req_t *req) {
+
+    auto state = cJSON_CreateObject();
+    for (uint8_t i = 0; i < totSensors; i++) {
+        sensors[i]->setState(state);
+    }
+    auto data = cJSON_Print(state);
+    httpd_resp_set_type(req, HTTPD_TYPE_JSON);
+    httpd_resp_send(req, data, -1);
+
+    cJSON_Delete(state);
+
     return ESP_OK;
 }
 esp_err_t WebServer::aboutHandler(httpd_req_t *req) {
@@ -35,7 +46,8 @@ esp_err_t WebServer::aboutHandler(httpd_req_t *req) {
     }
     httpd_resp_set_type(req, HTTPD_TYPE_TEXT);
     char buffer[100];
-    httpd_resp_send(req, Settings::settings.name, -1);
+    sprintf(buffer, "%s\n", Settings::settings.name);
+    httpd_resp_send(req, buffer, -1);
 
     return ESP_OK;
 }
