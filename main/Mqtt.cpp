@@ -94,8 +94,11 @@ void Mqtt::eventError() {
 void Mqtt::eventConnect(esp_mqtt_event_handle_t event) {
     ESP_LOGI(TAG, "CONNECTED");
 
+    xEventGroupWaitBits(wifi_event_group, SENSOR_CREATED, pdFALSE, pdFALSE,portMAX_DELAY );
+
 
     for(uint8_t i=0; i<totSensors; i++){
+        ESP_LOGI(TAG, "configuring topic for sensor %s", sensors[i]->name);
         for(auto & json:  sensors[i]->autoconfigure()){
             auto data = cJSON_Print(json->data);
             esp_mqtt_client_publish(client, json->topicName, data, 0, 1, 0);

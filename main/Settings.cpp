@@ -55,10 +55,10 @@ void Settings::init() {
     sensorSettings[1].pins[0] = GPIO_NUM_16;
     sensorSettings[1].pins[1] = GPIO_NUM_17;
 
-    sensorSettings[1].name="Heater";
-    sensorSettings[1].sensorType = SensorType::MONOSTABLE;
-    sensorSettings[1].pins = std::make_unique<gpio_num_t[]>(1);
-    sensorSettings[1].pins[0] = GPIO_NUM_23;
+    sensorSettings[2].name="Heater";
+    sensorSettings[2].sensorType = SensorType::MONOSTABLE;
+    sensorSettings[2].pins = std::make_unique<gpio_num_t[]>(1);
+    sensorSettings[2].pins[0] = GPIO_NUM_23;
 
     totSensors=3;
     mqttEnable=true;

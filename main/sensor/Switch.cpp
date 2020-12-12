@@ -14,7 +14,7 @@ void Switch::step() {
 
 std::vector<std::unique_ptr<AutoconfigurationTopic>> Switch::autoconfigure() {
     auto jsons = vector<std::unique_ptr<AutoconfigurationTopic>>();
-
+    ESP_LOGI(TAG,"Creating configuration for %s", configuration->createConfigTopicName());
     jsons.push_back(make_unique<AutoconfigurationTopic>(configuration->createConfig(), configuration->createConfigTopicName()));
 
     return jsons;

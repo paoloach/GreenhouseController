@@ -14,10 +14,8 @@ class Monostable: public Switch {
 private:
     static constexpr const char *TAG = "Bistable";
     gpio_num_t pinH;
-    std::unique_ptr<MqttSwitchConfigurationMessage> configuration;
-    bool state;
 public:
-    Monostable() : Switch(SensorType::MONOSTABLE), state(false) {}
+    Monostable() : Switch(SensorType::MONOSTABLE) {}
 
     void init(SensorSetting &setting) override;
 

@@ -4,12 +4,15 @@
 
 #include <esp_http_server.h>
 #include <esp_log.h>
+#include <esp_ota_ops.h>
+#include <ff.h>
 #include "include/webServer.h"
 #include "include/Settings.h"
 #include "include/GroupSignals.h"
 
 
 WebServer webServer;
+constexpr  int BUFFER_SIZE=1024;
 
 static esp_err_t methodNotSupported(httpd_req_t *connData) {
     const char *msg = "Request method is not supported by server\n";
@@ -21,6 +24,60 @@ static esp_err_t methodNotSupported(httpd_req_t *connData) {
 
 
 esp_err_t WebServer::postOTA(httpd_req_t *req) {
+    char buffer[BUFFER_SIZE];
+    esp_ota_handle_t updateHandle;
+
+    const esp_partition_t* update_partition = esp_ota_get_next_update_partition(NULL);
+    if (update_partition == nullptr){
+        ESP_LOGE(TAG, "Update partition fail");
+        httpd_resp_send_500(req);
+        return  ESP_OK;
+    }
+    ESP_LOGI(TAG, "Writing to partition subtype %d at offset 0x%x", update_partition->subtype, update_partition->address);
+
+
+    uint32_t readTot=0;
+    bool otaStarted=false;
+    while(readTot < req->content_len){
+        size_t recv_size = MIN(req->content_len, sizeof(BUFFER_SIZE));
+        int ret = httpd_req_recv(req, buffer, recv_size);
+        if (ret == HTTPD_SOCK_ERR_TIMEOUT )
+            continue;
+        if (ret< 0){
+            ESP_LOGE(TAG, "OTA read failed (%s)", esp_err_to_name(ret));
+            httpd_resp_send_500(req);
+            return  ESP_FAIL;
+        }
+        int dataRead = ret;
+        readTot += dataRead;
+        ESP_LOGI(TAG,"Read %d bytes until now",readTot );
+        if (!otaStarted){
+            esp_err_t err = esp_ota_begin(update_partition, OTA_WITH_SEQUENTIAL_WRITES, &updateHandle);
+            if (err != ESP_OK) {
+                ESP_LOGE(TAG, "esp_ota_begin failed (%s)", esp_err_to_name(err));
+                httpd_resp_send_500(req);
+                return  ESP_FAIL;
+            }
+            otaStarted=true;
+        }
+        esp_ota_write(updateHandle, buffer, dataRead);
+
+    }
+    if (esp_ota_end(updateHandle) != ESP_OK){
+        ESP_LOGE(TAG, "OTA end error ");
+        httpd_resp_send_500(req);
+        return ESP_FAIL;
+    }
+
+    if (esp_ota_set_boot_partition(update_partition) != ESP_OK){
+        ESP_LOGE(TAG, "OTA boot partition error ");
+        httpd_resp_send_500(req);
+        return ESP_FAIL;
+    }
+
+    ESP_LOGI(TAG,"OTA update successfully");
+    httpd_resp_send(req, "OTA update successfully\n", -1);
+
     return ESP_OK;
 }
 esp_err_t WebServer::setSampleIntervalHandler(httpd_req_t *req) {

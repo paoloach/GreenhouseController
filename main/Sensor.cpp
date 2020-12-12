@@ -8,6 +8,7 @@
 #include "sensor/include/Dht11.h"
 #include "sensor/include/Bistable.h"
 #include "sensor/include/Monostable.h"
+#include "include/GroupSignals.h"
 
 Sensor * * sensors;
 uint8_t totSensors;
@@ -40,6 +41,8 @@ void createSensors() {
         sensor->init(sensorSetting);
         sensors[i] = sensor.release();
     }
+
+    xEventGroupSetBits(wifi_event_group, SENSOR_CREATED);
 }
 
 

@@ -15,10 +15,8 @@ private:
     static constexpr const char * TAG ="Bistable";
     gpio_num_t pinH;
     gpio_num_t pinL;
-    std::unique_ptr<MqttSwitchConfigurationMessage> configuration;
-    bool state;
 public:
-    Bistable():Switch(SensorType::BISTABLE), state(false){}
+    Bistable():Switch(SensorType::BISTABLE){}
     void init(SensorSetting & setting) override;
 
 private:
