@@ -1,0 +1,65 @@
+esphome:
+  name: serra-up-brain
+
+esp32:
+  board: esp-wrover-kit
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: ""
+
+ota:
+  password: ""
+  
+switch:
+  - platform: gpio
+    name: "CH0"
+    pin: 4  
+  - platform: gpio
+    name: "CH1"
+    pin: 5
+  - platform: gpio
+    name: "CH2"
+    pin: 18
+  - platform: gpio
+    name: "CH3"
+    pin: 19
+  - platform: gpio
+    name: "Pompa1"
+    pin: 27
+  - platform: gpio
+    name: "Pompa2"
+    pin: 26
+  - platform: restart
+    name: "SerraUp Restart"    
+    
+dallas:
+  - pin: 25
+  
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal Sensor"
+    update_interval: 60s
+  - platform: dallas
+    address: 0xD601203969EBF428
+    name: "SerraUp temperature"  
+  - platform: dallas
+    address: 0x7C012039EFB20628
+    name: "SerraUp temperature2"     
+    
+
+wifi:
+  ssid: "TP-LINK_2.4"
+  password: "caciottinatuttook"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Serra-Up-Brain Fallback Hotspot"
+    password: "3kLwe3TbDPgI"
+
+captive_portal:
