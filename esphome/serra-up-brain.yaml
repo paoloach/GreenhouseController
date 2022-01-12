@@ -19,7 +19,9 @@ ota:
 switch:
   - platform: gpio
     name: "CH0"
-    pin: 4  
+    pin: 
+        number: 25
+        inverted: true
   - platform: gpio
     name: "CH1"
     pin: 5
