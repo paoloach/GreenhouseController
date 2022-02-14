@@ -1,6 +1,12 @@
 esphome:
   name: serra-up-brain
-
+  includes:
+    - moist.h
+  libraries:
+    - SPI
+    - tinyu-zhao/FFT@^0.0.1
+    
+  
 esp32:
   board: esp-wrover-kit
   framework:
@@ -24,13 +30,19 @@ switch:
         inverted: true
   - platform: gpio
     name: "CH1"
-    pin: 5
+    pin: 
+        number: 5
+        inverted: true
   - platform: gpio
     name: "CH2"
-    pin: 18
+    pin: 
+        number: 18
+        inverted: true
   - platform: gpio
     name: "CH3"
-    pin: 19
+    pin: 
+        number: 19
+        inverted: true    
   - platform: gpio
     name: "Pompa1"
     pin: 27
@@ -44,6 +56,14 @@ dallas:
   - pin: 25
   
 sensor:
+  - platform: custom
+    lambda: |-
+      auto moistSensor = new MoistMCP3201Sensor(14,12,15);
+      App.register_component(moistSensor);
+      return {moistSensor};
+    sensors:
+      name: "moist1"
+      unit_of_measurement: "UNIT_PERCENT"
   - platform: wifi_signal
     name: "WiFi Signal Sensor"
     update_interval: 60s
